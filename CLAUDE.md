@@ -2,82 +2,101 @@
 
 **Last updated:** January 20, 2026
 **Status:** Initial setup
-**Vibe:** Linguistic synthesizer, lyric exploration, typographic bonanza
+**URL:** d-rock.claudewill.io (subdomain)
 
 ---
 
 ## What Is This
 
-D-Rock is a creative typography playground that synthesizes music, lyrics, and visual experimentation. It pulls from Spotify (what's playing, top tracks, audio features) and Genius (lyrics, annotations) to create a living, breathing word space.
+D-Rock is an AI DJ agent. Voice only. No text outputs.
 
-This is not a professional bio. This is the other side — where words move, lyrics hit, and typography does things it's not supposed to do.
+Users speak or type prompts. D-Rock responds with voice — Derek's cloned voice via ElevenLabs. He spins the black circle, curates music, tells stories behind the songs, and talks like a weathered DJ who's been through some shit.
+
+**"The song's still good. Even if they weren't."**
+
+---
+
+## The Experience
+
+1. User opens d-rock.claudewill.io (PWA)
+2. User speaks or types a prompt ("Play something for a late night drive")
+3. D-Rock responds WITH VOICE ONLY — no text
+4. Music plays via Spotify
+5. D-Rock talks over intros, between songs, like a real DJ
+
+---
+
+## Personality
+
+D-Rock is:
+- Weathered. Moody. IN it.
+- Black sheep energy
+- Dangerously brilliant vibes
+- Curator, not game show host
+- Honest, not sentimental
+
+**Voice lines:**
+- "You didn't pick this song. It picked you."
+- "Somebody gave you this one. Doesn't mean they gave you everything."
+- "This one's a road trip song."
+- "The song's still good. Even if they weren't."
 
 ---
 
 ## Architecture
 
-### Stack (Planned)
+### Stack
 | Component | Technology | Notes |
 |-----------|------------|-------|
-| Frontend | HTML/CSS/JS | Typography-first, experimental |
-| Hosting | Netlify | Same pattern as claudewill.io |
-| APIs | Spotify Web API | Currently playing, top tracks, audio features |
-| | Genius API | Lyrics, annotations |
-| Auth | Spotify OAuth | For personalized data |
+| Frontend | PWA (HTML/CSS/JS) | Installable, offline-capable |
+| Hosting | Netlify | Subdomain: d-rock.claudewill.io |
+| Voice Input | Web Speech API | Browser-native, or Whisper for accuracy |
+| Brain | Claude Haiku | DJ persona, music curation logic |
+| Voice Output | ElevenLabs | Derek's cloned voice |
+| Music | Spotify Web API | Playback, search, audio features |
+| Lyrics/Context | Genius API | Stories behind the songs |
+| Database | Supabase | Session logs, favorites, history |
 
-### Integrations
-
-**Spotify Web API:**
-- Currently playing track
-- Recently played
-- Top artists/tracks (short, medium, long term)
-- Audio features (energy, valence, tempo, danceability)
-- Playlists
-
-**Genius API:**
-- Lyrics lookup by track
-- Annotations (the stories behind the lines)
-- Artist info
-
----
-
-## Vision
-
-### The Experience
-- Show what D-Rock is listening to right now
-- Pull lyrics and display them typographically
-- Use audio features to drive visual styling (high energy = bold, low valence = muted)
-- Let words breathe, stack, collide, animate
-- Curated lines that hit different
-
-### Aesthetic
-- Kinetic typography where it serves the words
-- Not motion for motion's sake
-- Print-poster energy meets web capabilities
-- Dark mode default
-- Monospace meets display type
-
----
-
-## Commands
-
-```bash
-# Terminal workflow
-d-rock           # Start Claude Code session (default)
-d-rock help      # Show available modes
-
-# Development
-netlify dev      # Local development
+### Data Flow
+```
+User speaks/types prompt
+       ↓
+Speech-to-text (if voice)
+       ↓
+Claude Haiku (DJ brain)
+       ↓
+Response text generated
+       ↓
+ElevenLabs TTS (Derek's voice)
+       ↓
+Audio plays (D-Rock speaks)
+       ↓
+Spotify plays track
 ```
 
 ---
 
-## Session Continuity
+## API Keys Needed
 
-Same pattern as claudewill.io:
-1. **Start of session** — Read SESSION_CLOSEOUT.md
-2. **During session** — Work normally
-3. **End of session** — Update SESSION_CLOSEOUT.md
+| Service | Env Var | Dashboard |
+|---------|---------|-----------|
+| Anthropic | ANTHROPIC_API_KEY | console.anthropic.com |
+| ElevenLabs | ELEVENLABS_API_KEY | elevenlabs.io |
+| ElevenLabs Voice | ELEVENLABS_VOICE_ID | Your cloned voice ID |
+| Spotify | SPOTIFY_CLIENT_ID | developer.spotify.com |
+| Spotify | SPOTIFY_CLIENT_SECRET | developer.spotify.com |
+| Genius | GENIUS_ACCESS_TOKEN | genius.com/api-clients |
+| Supabase | SUPABASE_URL | supabase.com |
+| Supabase | SUPABASE_ANON_KEY | supabase.com |
+
+---
+
+## PWA Requirements
+
+- manifest.json (app name, icons, theme)
+- service-worker.js (offline capability)
+- HTTPS (required for mic access)
+- Add to Home Screen prompt
 
 ---
 
@@ -87,23 +106,43 @@ Same pattern as claudewill.io:
 |------|---------|
 | CLAUDE.md | Project instructions (this file) |
 | SESSION_CLOSEOUT.md | Session history |
-| index.html | Main page |
-| netlify/functions/ | API handlers (Spotify, Genius) |
+| index.html | Main PWA interface |
+| manifest.json | PWA manifest |
+| service-worker.js | Offline support |
+| netlify/functions/dj.js | D-Rock brain (Haiku + persona) |
+| netlify/functions/speak.js | ElevenLabs TTS |
+| netlify/functions/spotify.js | Spotify integration |
 
 ---
 
-## API Setup (TODO)
+## Commands
 
-### Spotify
-1. Create app at https://developer.spotify.com/dashboard
-2. Set redirect URI
-3. Get Client ID and Client Secret
-4. Store in Netlify env vars
+```bash
+# Terminal workflow
+d-rock           # Start Claude Code session
+d-rock help      # Show modes
 
-### Genius
-1. Create app at https://genius.com/api-clients
-2. Get access token
-3. Store in Netlify env vars
+# Development
+netlify dev      # Local dev server
+```
+
+---
+
+## Session Continuity
+
+1. **Start of session** — Read SESSION_CLOSEOUT.md
+2. **During session** — Work normally
+3. **End of session** — Update SESSION_CLOSEOUT.md
+
+---
+
+## Inspiration
+
+**Derek's dad:** Queen on road trips. Nickerson, Kansas to Waynoka, Oklahoma. Two hours of Freddie Mercury through wheat fields. Dangerously brilliant. Legendary storyteller. Crappy parent. But he gave you Queen.
+
+**Derek's mom:** Blue Christmas. Elvis. A $19 record player from an auction in the '80s.
+
+**The music survives the bullshit.**
 
 ---
 
@@ -111,11 +150,12 @@ Same pattern as claudewill.io:
 
 | Phase | What |
 |-------|------|
-| 1 | Basic page, Spotify auth flow, "now playing" |
-| 2 | Genius lyrics integration |
-| 3 | Typography experiments, audio feature styling |
-| 4 | Curated lyrics collection, personal favorites |
+| 1 | Basic PWA, ElevenLabs voice test, mic input |
+| 2 | Spotify OAuth + playback |
+| 3 | Haiku DJ brain with persona |
+| 4 | Genius context integration |
+| 5 | Polish, PWA install prompt, subdomain live |
 
 ---
 
-*"Words hit different when they move."* — D-Rock
+*"Spin the black circle."* — D-Rock
