@@ -1,0 +1,102 @@
+#!/bin/bash
+
+# d-rock - D-Rock project system
+# Usage: d-rock [work|lyrics|spotify|help]
+
+DROCK_DIR="/Users/dereksimmons/Desktop/d-rock"
+CLAUDE_MD="$DROCK_DIR/CLAUDE.md"
+SESSION_CLOSEOUT="$DROCK_DIR/SESSION_CLOSEOUT.md"
+
+MODE=${1:-work}
+
+case $MODE in
+    work)
+        PROMPT="Read the project instructions and session closeout, then help with D-Rock.
+
+**Files to read first:**
+- $CLAUDE_MD (project instructions)
+- $SESSION_CLOSEOUT (what's done, what's next)
+
+**Your role:**
+1. Know the current state of the project
+2. Help build the linguistic synthesizer / typography playground
+3. Integrate Spotify and Genius APIs
+4. Update SESSION_CLOSEOUT.md when done
+
+Start by reading the files, then ask what we're working on today."
+        ;;
+    lyrics)
+        PROMPT="Read the project instructions. LYRICS MODE.
+
+**Files to read first:**
+- $CLAUDE_MD (project instructions)
+- $SESSION_CLOSEOUT (context)
+
+**Lyrics Mode:**
+- Focus on typography and visual presentation of lyrics
+- Experiment with how words stack, flow, animate
+- Think about rhythm, emphasis, whitespace
+- The words are the content, the typography is the experience
+
+Start by reading the files, then ask what lyrics we're working with."
+        ;;
+    spotify)
+        PROMPT="Read the project instructions. SPOTIFY INTEGRATION MODE.
+
+**Files to read first:**
+- $CLAUDE_MD (project instructions)
+- $SESSION_CLOSEOUT (context)
+
+**Spotify Mode:**
+- Focus on Spotify Web API integration
+- OAuth flow, currently playing, audio features
+- How to use track data to drive visuals
+
+Start by reading the files, then ask what Spotify feature we're building."
+        ;;
+    status)
+        echo "D-Rock - Session Status"
+        echo "======================="
+        echo ""
+        head -50 "$SESSION_CLOSEOUT"
+        echo ""
+        echo "..."
+        echo "(Run 'cat $SESSION_CLOSEOUT' for full file)"
+        exit 0
+        ;;
+    help)
+        echo ""
+        echo "  d-rock - D-Rock project system"
+        echo "  ==============================="
+        echo "  Linguistic synthesizer | Lyric exploration | Typography"
+        echo ""
+        echo "  COMMANDS:"
+        echo "    d-rock           General work (default)"
+        echo "    d-rock work      General work on project"
+        echo "    d-rock lyrics    Focus on lyrics + typography"
+        echo "    d-rock spotify   Focus on Spotify integration"
+        echo "    d-rock status    Show session closeout"
+        echo "    d-rock help      Show this help"
+        echo ""
+        echo "  KEY FILES:"
+        echo "    /CLAUDE.md              Project instructions"
+        echo "    /SESSION_CLOSEOUT.md    Session history"
+        echo "    /index.html             Main page"
+        echo "    /netlify/functions/     API handlers"
+        echo ""
+        exit 0
+        ;;
+    *)
+        echo "Usage: d-rock [work|lyrics|spotify|status|help]"
+        echo "  work     - General work (default)"
+        echo "  lyrics   - Focus on lyrics + typography"
+        echo "  spotify  - Focus on Spotify integration"
+        echo "  status   - Show session closeout"
+        echo "  help     - Show full help"
+        exit 1
+        ;;
+esac
+
+# Launch Claude Code with the prompt
+cd "$DROCK_DIR"
+claude "$PROMPT"

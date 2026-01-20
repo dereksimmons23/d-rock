@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D-Rock</title>
+  <meta name="description" content="Linguistic synthesizer. Lyric exploration. Typographic bonanza.">
+
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --text: #f0f0f0;
+      --dim: #666;
+      --accent: #00ff88;
+      --mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 800px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: clamp(4rem, 15vw, 12rem);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .tagline {
+      font-size: 1rem;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      margin-bottom: 3rem;
+    }
+
+    .now-playing {
+      border: 1px solid var(--dim);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      text-align: left;
+    }
+
+    .now-playing-label {
+      font-size: 0.75rem;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+    }
+
+    .track-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .track-artist {
+      color: var(--dim);
+    }
+
+    .connect-btn {
+      display: inline-block;
+      padding: 1rem 2rem;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .connect-btn:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .lyrics-preview {
+      margin-top: 4rem;
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      line-height: 1.4;
+      font-weight: 300;
+      max-width: 600px;
+    }
+
+    .lyrics-preview .highlight {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 2rem;
+      font-size: 0.75rem;
+      color: var(--dim);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>D-ROCK</h1>
+    <p class="tagline">Words hit different when they move</p>
+
+    <div class="now-playing" id="now-playing" style="display: none;">
+      <p class="now-playing-label">Now Playing</p>
+      <p class="track-title" id="track-title">—</p>
+      <p class="track-artist" id="track-artist">—</p>
+    </div>
+
+    <button class="connect-btn" id="connect-spotify">
+      Connect Spotify
+    </button>
+
+    <div class="lyrics-preview">
+      <p>The words you're looking for<br>
+      are <span class="highlight">already here</span>.<br>
+      You just haven't<br>
+      heard them yet.</p>
+    </div>
+  </div>
+
+  <footer>
+    Linguistic synthesizer. Under construction.
+  </footer>
+
+  <script>
+    // Spotify OAuth configuration (to be set up)
+    const SPOTIFY_CLIENT_ID = ''; // Add after creating Spotify app
+    const REDIRECT_URI = window.location.origin + '/callback';
+    const SCOPES = [
+      'user-read-currently-playing',
+      'user-read-recently-played',
+      'user-top-read'
+    ].join(' ');
+
+    document.getElementById('connect-spotify').addEventListener('click', () => {
+      if (!SPOTIFY_CLIENT_ID) {
+        alert('Spotify app not configured yet. Coming soon.');
+        return;
+      }
+
+      const authUrl = `https://accounts.spotify.com/authorize?` +
+        `client_id=${SPOTIFY_CLIENT_ID}` +
+        `&response_type=token` +
+        `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+        `&scope=${encodeURIComponent(SCOPES)}`;
+
+      window.location.href = authUrl;
+    });
+
+    // Check for access token in URL hash (after OAuth redirect)
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const accessToken = params.get('access_token');
+
+    if (accessToken) {
+      // Clear hash from URL
+      history.replaceState(null, '', window.location.pathname);
+
+      // Fetch currently playing
+      fetchNowPlaying(accessToken);
+    }
+
+    async function fetchNowPlaying(token) {
+      try {
+        const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.status === 204) {
+          // Nothing playing
+          return;
+        }
+
+        const data = await response.json();
+        if (data && data.item) {
+          document.getElementById('now-playing').style.display = 'block';
+          document.getElementById('track-title').textContent = data.item.name;
+          document.getElementById('track-artist').textContent = data.item.artists.map(a => a.name).join(', ');
+          document.getElementById('connect-spotify').style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error fetching now playing:', error);
+      }
+    }
+  </script>
+</body>
+</html>
