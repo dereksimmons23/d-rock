@@ -2,111 +2,116 @@
 
 ---
 
-## Session: January 20, 2026
+## Session: January 29, 2026
 
 **Branch:** `main`
-**Status:** Project initialized, vision defined, research complete
+**Status:** Playlist curation, song revision, IP protection.
 
-### Completed Today
+### Completed Tonight
 
-**Project Setup:**
-- ✅ Created d-rock repo at ~/Desktop/d-rock
-- ✅ GitHub repo live: https://github.com/dereksimmons23/d-rock
-- ✅ Terminal script `d-rock` added to PATH (modes: work, lyrics, spotify)
-- ✅ Basic index.html with Spotify OAuth placeholder
-- ✅ Netlify config ready
+**IP Protection:**
+- ✅ Gitignored `docs/`, `screenshots/`, `ghost-road-trip.txt`
+- ✅ Untracked from git, committed, pushed
+- Personal writing, lyrics, playlists, backstory stay local only
 
-**Vision Defined:**
-- ✅ D-Rock is an AI DJ agent — voice only, no text outputs
-- ✅ PWA at d-rock.claudewill.io (subdomain)
-- ✅ Uses Derek's cloned voice via ElevenLabs
-- ✅ Users speak or type prompts, D-Rock responds with voice
-- ✅ Spotify for playback, Genius for lyrics context, Haiku for brain
+**Song Revised:**
+- ✅ "Road Trip Songs" renamed to **"Drunken Eden"** (`docs/drunken-eden.md`)
+- Updated: fifty-three not forty-three, cowboy abbreviations (til, nothin', drivin', ridin', cryin'), tighter rhymes
+- "spin the story machine" replaced "spin the tallest tales"
+- "mostly just shrugged" replaced "mostly just listened"
+- "that's how cowboys roll" — harder landing
 
-**Persona Development:**
-- ✅ Created `docs/dj-responses.md` — call-and-response patterns
-- ✅ Example: "wtf with this world news" → Walk by Pantera
-- ✅ Voice principles: never explain, match energy, short and raw
-- ✅ Signature lines captured
+**New Playlist Created:**
+- ✅ **Take Me to Church** (`docs/take-me-to-church.md`) — 15 tracks
+- Seed: Celeste — "Strange." Storytellers who don't flinch.
+- Celeste, Michael Kiwanuka, Tracy Chapman, Jason Isbell, Kacey Musgraves, Mason Proper, Hozier, Jeff Buckley, Gregory Alan Isakov, Townes Van Zandt, Nina Simone, Chris Stapleton, Zach Bryan
 
-**Research Complete:**
-- ✅ `docs/ai-dj-research.md` — Spotify DJ architecture, ElevenLabs, LLM approach
-- ✅ `docs/visual-features-research.md` — API vs build analysis
-- ✅ Spotify DJ uses Llama, Xavier "X" voice, 4x engagement with commentary
-- ✅ Most visuals buildable with JS (GSAP, Three.js, tsParticles, shaders)
-- ✅ Only APIs needed: Spotify, ElevenLabs, Genius
+**Playlists Expanded:**
+- ✅ **Rage Against The White Keys** — now 20 tracks (added The Hand That Feeds, Testify, Sober)
+- ✅ **Songbird** (was From Icons to Bygones) — now 10 tracks (added Purple Rain, Heroes, Hallelujah, Free Fallin', Respect, Black Hole Sun, Everlong, Songbird, Nothing Compares 2 U)
 
-### Files in Repo
+**All Playlists Named (track-name rule):**
 
-```
-d-rock/
-├── CLAUDE.md                      # Project instructions
-├── SESSION_CLOSEOUT.md            # This file
-├── D-ROCK-CONCEPT.md              # Original concept (game/curator idea)
-├── index.html                     # Basic PWA shell
-├── netlify.toml                   # Deployment config
-├── .gitignore
-├── scripts/
-│   └── d-rock                     # Terminal launcher
-└── docs/
-    ├── dj-responses.md            # Call-and-response examples
-    ├── ai-dj-research.md          # Competitive/technical research
-    └── visual-features-research.md # API vs build analysis
-```
+| Playlist | File | Tracks | Description |
+|----------|------|--------|-------------|
+| Take Me to Church | `docs/take-me-to-church.md` | 15 | Storytellers who don't flinch |
+| Rage Against The White Keys | `docs/rage-against-the-white-keyes.md` | 20 | The mashup sermon |
+| Coffee & Cookies for Breakfast | `docs/coffee-and-cookies-for-breakfast.md` | 35 | Mom's playlist. Song to write. |
+| Goodbye Yellow Brick Road | `docs/goodbye-yellow-brick-road.md` | 82 | Jackson trip. Kansas kid leaves Kansas. |
+| Songbird | `docs/songbird.md` | 10 | Cultural grief. When the legends die. |
+| Black Sheep | `docs/black-sheep.md` | 2 | The ones who don't fit the flock |
+| Lost Highway | `docs/lost-highway.txt` | 24 | Dad's ghost road trip. Needs ~6 more. |
 
-### Architecture Decided
+**Song:** Drunken Eden (`docs/drunken-eden.md`) — the road trip song about road trip songs.
+
+### Files (local, gitignored)
 
 ```
-User Input (voice/text)
-       ↓
-Web Speech API (STT)
-       ↓
-Claude Haiku (DJ brain + persona)
-       ↓
-ElevenLabs (Derek's voice)
-       ↓
-Audio plays (D-Rock speaks)
-       ↓
-Spotify Web Playback SDK
-       ↓
-Music plays + visuals react
+docs/
+├── drunken-eden.md              # THE SONG (revised)
+├── take-me-to-church.md         # NEW playlist
+├── rage-against-the-white-keyes.md # Expanded to 20
+├── coffee-and-cookies-for-breakfast.md # Mom's playlist (35)
+├── goodbye-yellow-brick-road.md # Jackson trip (82)
+├── songbird.md                  # Cultural grief (10, expanded)
+├── black-sheep.md               # Black sheep energy (2)
+├── lost-highway.txt             # Ghost road trip (24)
+├── dj-responses.md              # Call-and-response examples
+├── ai-dj-research.md            # Competitive/technical research
+├── visual-features-research.md  # API vs build analysis
+├── energy-states.md             # 68 emotional states
+├── disclaimers.md               # Hybrid, legal, in-character
 ```
-
-### APIs Needed
-
-| Service | Status | Dashboard |
-|---------|--------|-----------|
-| Anthropic | Have it | console.anthropic.com |
-| ElevenLabs | Need voice ID | elevenlabs.io |
-| Spotify | Need app | developer.spotify.com |
-| Genius | Need token | genius.com/api-clients |
-| Supabase | Have it | supabase.com |
-
-### Visual Stack (Buildable)
-
-- **Backgrounds:** balatroShader.js or custom GLSL
-- **Typography:** GSAP + Splitting.js
-- **Particles:** tsParticles
-- **Audio-reactive:** Web Audio API + Three.js
-- **Mood colors:** Spotify valence/energy → palette
 
 ### Next Session
 
-1. [ ] Set up Netlify site for d-rock
-2. [ ] Configure subdomain: d-rock.claudewill.io
-3. [ ] Create Spotify Developer app
-4. [ ] Get ElevenLabs voice ID (Derek's clone)
-5. [ ] Build Phase 1: PWA shell + ElevenLabs voice test
-6. [ ] Build mic input (Web Speech API)
+**Songs to Write:**
+- [ ] "Coffee and Cookies for Breakfast" — mom's song
+- [ ] Continue refining "Drunken Eden"
+
+**Persona:**
+- [ ] Add Derek's soundtrack to Black Sheep
+- [ ] Finish Lost Highway (~6 more songs)
+- [ ] Map energy states to Spotify audio features (valence, energy, tempo)
+
+**Build (Phase 1):**
+- [ ] Set up Netlify site for d-rock
+- [ ] Configure subdomain: d-rock.claudewill.io
+- [ ] Create Spotify Developer app
+- [ ] Get ElevenLabs voice ID (Derek's clone)
+- [ ] Build PWA shell + ElevenLabs voice test
+- [ ] Build mic input (Web Speech API)
 
 ### Key Insight
 
-D-Rock's edge over Spotify DJ:
-- **Your voice**, not Xavier "X"
-- **Weathered persona**, not friendly/upbeat
-- **Voice-only commitment** to the medium
-- **Emotional matching**, not just genre matching
+Every playlist has a name now. Not a description — a track. The playlist wears one of its own songs. That's D-Rock logic: the music names itself.
 
-*"The song's still good. Even if they weren't."*
+**Dad's saying:** "Always Eternal Hope." It's on his gravestone. But also: Always *is* Eternal. Remember that.
+
+*"See you on the B side."*
 
 ---
+
+## Previous Sessions
+
+### January 25, 2026 (Evening)
+- Wrote "Road Trip Songs" (now Drunken Eden)
+- Created/expanded 5 playlists, ghost road trip to 24 songs
+- Documented disclaimers, energy states to 68
+- Major backstory documented
+
+### January 25, 2026 (Earlier)
+- Created energy states (67 at the time)
+- Started ghost road trip playlist (21 songs)
+- Created rage-against-the-white-keyes.md
+- Content filter triggered on song discussions (false positive)
+
+### January 20, 2026
+- Project initialized
+- GitHub repo live: https://github.com/dereksimmons23/d-rock
+- Vision defined: AI DJ, voice only, Derek's cloned voice
+- Research complete: ai-dj-research.md, visual-features-research.md
+
+---
+
+*"The song's still good. Even if they weren't."*
