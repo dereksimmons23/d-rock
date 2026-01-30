@@ -18,3 +18,8 @@ node_modules/
 
 # Logs
 *.log
+
+# IP — personal writing, lyrics, playlists, backstory
+docs/
+ghost-road-trip.txt
+screenshots/
