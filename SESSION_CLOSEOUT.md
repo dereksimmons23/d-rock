@@ -2,97 +2,131 @@
 
 ---
 
-## Session: January 29, 2026
+## Session: February 3, 2026
 
 **Branch:** `main`
-**Status:** Playlist curation, song revision, IP protection.
+**Status:** Netlify site created, env vars set. Spotify integration on hold.
 
-### Completed Tonight
+### Completed Today
 
-**IP Protection:**
-- ✅ Gitignored `docs/`, `screenshots/`, `ghost-road-trip.txt`
-- ✅ Untracked from git, committed, pushed
-- Personal writing, lyrics, playlists, backstory stay local only
+**Netlify setup via CLI:**
+- ✅ Created site: [d-rock.netlify.app](https://d-rock.netlify.app) (Project ID: 57ba799e-f301-4d1d-82c3-dc1779114297)
+- ✅ Linked project to local folder
+- ✅ Set `ELEVENLABS_VOICE_ID`: `Qoqyb6EjT25StcDRFg6r`
+- ✅ Set `ELEVENLABS_API_KEY`
+- ✅ Set `ANTHROPIC_API_KEY`
 
-**Song Revised:**
-- ✅ "Road Trip Songs" renamed to **"Drunken Eden"** (`docs/drunken-eden.md`)
-- Updated: fifty-three not forty-three, cowboy abbreviations (til, nothin', drivin', ridin', cryin'), tighter rhymes
-- "spin the story machine" replaced "spin the tallest tales"
-- "mostly just shrugged" replaced "mostly just listened"
-- "that's how cowboys roll" — harder landing
+### Still Needed
 
-**New Playlist Created:**
-- ✅ **Take Me to Church** (`docs/take-me-to-church.md`) — 15 tracks
-- Seed: Celeste — "Strange." Storytellers who don't flinch.
-- Celeste, Michael Kiwanuka, Tracy Chapman, Jason Isbell, Kacey Musgraves, Mason Proper, Hozier, Jeff Buckley, Gregory Alan Isakov, Townes Van Zandt, Nina Simone, Chris Stapleton, Zach Bryan
+**Custom domain (manual in Netlify dashboard):**
+- [ ] Add custom domain: `d-rock.claudewill.io`
+- [ ] Go to [app.netlify.com/projects/d-rock](https://app.netlify.com/projects/d-rock) → Domain management
 
-**Playlists Expanded:**
-- ✅ **Rage Against The White Keys** — now 20 tracks (added The Hand That Feeds, Testify, Sober)
-- ✅ **Songbird** (was From Icons to Bygones) — now 10 tracks (added Purple Rain, Heroes, Hallelujah, Free Fallin', Respect, Black Hole Sun, Everlong, Songbird, Nothing Compares 2 U)
+**Spotify setup (on hold):**
+1. Create app at [developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)
+2. Name: `D-Rock`, Description: `AI DJ`
+3. Redirect URI: `https://d-rock.claudewill.io/callback`
+4. Check **Web API**, Save
+5. Get `Client ID` and `Client Secret`
+6. Run: `netlify env:set SPOTIFY_CLIENT_ID <your-client-id>`
+7. Update `index.html` line 519 with the Client ID
 
-**All Playlists Named (track-name rule):**
+**Code fixes before deploy (from Feb 1 audit):**
+- [ ] Fix Spotify device handling — deviceId never gets set
+- [ ] Generate PWA icons (icon-192.png, icon-512.png)
+- [ ] Add Spotify token expiry handling
 
-| Playlist | File | Tracks | Description |
-|----------|------|--------|-------------|
-| Take Me to Church | `docs/take-me-to-church.md` | 15 | Storytellers who don't flinch |
-| Rage Against The White Keys | `docs/rage-against-the-white-keyes.md` | 20 | The mashup sermon |
-| Coffee & Cookies for Breakfast | `docs/coffee-and-cookies-for-breakfast.md` | 35 | Mom's playlist. Song to write. |
-| Goodbye Yellow Brick Road | `docs/goodbye-yellow-brick-road.md` | 82 | Jackson trip. Kansas kid leaves Kansas. |
-| Songbird | `docs/songbird.md` | 10 | Cultural grief. When the legends die. |
-| Black Sheep | `docs/black-sheep.md` | 2 | The ones who don't fit the flock |
-| Lost Highway | `docs/lost-highway.txt` | 24 | Dad's ghost road trip. Needs ~6 more. |
+### When Ready to Deploy
 
-**Song:** Drunken Eden (`docs/drunken-eden.md`) — the road trip song about road trip songs.
-
-### Files (local, gitignored)
-
-```
-docs/
-├── drunken-eden.md              # THE SONG (revised)
-├── take-me-to-church.md         # NEW playlist
-├── rage-against-the-white-keyes.md # Expanded to 20
-├── coffee-and-cookies-for-breakfast.md # Mom's playlist (35)
-├── goodbye-yellow-brick-road.md # Jackson trip (82)
-├── songbird.md                  # Cultural grief (10, expanded)
-├── black-sheep.md               # Black sheep energy (2)
-├── lost-highway.txt             # Ghost road trip (24)
-├── dj-responses.md              # Call-and-response examples
-├── ai-dj-research.md            # Competitive/technical research
-├── visual-features-research.md  # API vs build analysis
-├── energy-states.md             # 68 emotional states
-├── disclaimers.md               # Hybrid, legal, in-character
+```bash
+netlify deploy --prod
 ```
 
-### Next Session
+---
+
+## Session: February 1, 2026
+
+**Branch:** `main`
+**Status:** Codebase audit complete. Ready to wire up and deploy.
+
+### Completed Today
+
+**Full codebase audit — mapped every gap:**
+- ✅ Reviewed all functions (dj.js, speak.js, spotify.js) — confirmed working structure
+- ✅ Identified `SPOTIFY_CLIENT_ID` empty in index.html (line 519) — needs Spotify Developer app
+- ✅ Confirmed env vars needed: `ANTHROPIC_API_KEY`, `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID`
+- ✅ Found Spotify `deviceId` never gets set — playback will fail without fix
+- ✅ PWA icons referenced in manifest but files don't exist (icon-192.png, icon-512.png)
+- ✅ netlify.toml, service-worker, manifest all structurally sound
+
+### No Files Modified
+
+Audit only. No code changes.
+
+### Next Session — Go Live Checklist
+
+**Before anything else (account setup):**
+- [ ] Create Spotify Developer app at developer.spotify.com
+- [ ] Get `SPOTIFY_CLIENT_ID`, put it in index.html line 519
+- [ ] Set redirect URI in Spotify app to `https://d-rock.claudewill.io/callback`
+- [ ] Have `ANTHROPIC_API_KEY` ready
+- [ ] Have `ELEVENLABS_API_KEY` + `ELEVENLABS_VOICE_ID` ready
+
+**Code fixes before deploy:**
+- [ ] Fix Spotify device handling — deviceId is never set, need to fetch active device or use Web Playback SDK
+- [ ] Generate PWA icons (SVG inline or simple PNG) for icon-192.png and icon-512.png
+- [ ] Add Spotify token expiry handling (implicit grant = 1 hour, then dead)
+
+**Deploy:**
+- [ ] Set env vars in Netlify dashboard
+- [ ] Configure subdomain: d-rock.claudewill.io
+- [ ] `npm install` + deploy
+- [ ] Test full flow: speak → D-Rock responds → track plays
+
+**After it works — polish:**
+- [ ] Mood ring: map track picks to groove hue (late night = indigo, heartbreak = crimson, rowdy = amber/green)
+- [ ] Spotify audio features (valence, energy, tempo) → mood color
+- [ ] Now Playing card styling
+- [ ] Mobile testing / responsive tuning
+- [ ] Conversation history (currently single-shot, no memory between prompts)
 
 **Songs to Write:**
 - [ ] "Coffee and Cookies for Breakfast" — mom's song
+- [ ] Continue refining "The Rock" — second draft
 - [ ] Continue refining "Drunken Eden"
 
 **Persona:**
 - [ ] Add Derek's soundtrack to Black Sheep
 - [ ] Finish Lost Highway (~6 more songs)
-- [ ] Map energy states to Spotify audio features (valence, energy, tempo)
-
-**Build (Phase 1):**
-- [ ] Set up Netlify site for d-rock
-- [ ] Configure subdomain: d-rock.claudewill.io
-- [ ] Create Spotify Developer app
-- [ ] Get ElevenLabs voice ID (Derek's clone)
-- [ ] Build PWA shell + ElevenLabs voice test
-- [ ] Build mic input (Web Speech API)
 
 ### Key Insight
 
-Every playlist has a name now. Not a description — a track. The playlist wears one of its own songs. That's D-Rock logic: the music names itself.
-
-**Dad's saying:** "Always Eternal Hope." It's on his gravestone. But also: Always *is* Eternal. Remember that.
+The code is built. The gap is accounts and keys — Spotify Developer app, env vars in Netlify, and three code fixes (device handling, token refresh, PWA icons). Once those are in, D-Rock goes live.
 
 *"See you on the B side."*
 
 ---
 
 ## Previous Sessions
+
+### January 31, 2026
+- Phase 1 build complete — full turntable UI, all Netlify functions, PWA structure
+- CSS-only vinyl record with groove animations, tonearm, 32-bar EQ
+- DR●CK wordmark, state machine, Web Speech API, Spotify OAuth flow
+- Design locked: record is the mood ring, no fake hardware
+
+### January 29, 2026 (Evening)
+
+- New playlist: Wish You Were Here (45 tracks) — for cousin E
+- New song: "The Rock" — first draft, dad's campfire tequila wisdom
+- All 8 playlists named by track-name rule
+
+### January 29, 2026 (Earlier)
+- IP protection: gitignored docs/, screenshots/, personal writing
+- Revised "Drunken Eden" (cowboy abbreviations, tighter rhymes)
+- Created Take Me to Church playlist (15 tracks)
+- Expanded Rage Against The White Keys (20), Songbird (10)
+- All playlists named by track-name rule
 
 ### January 25, 2026 (Evening)
 - Wrote "Road Trip Songs" (now Drunken Eden)

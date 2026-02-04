@@ -23,3 +23,7 @@ node_modules/
 docs/
 ghost-road-trip.txt
 screenshots/
+voice/
+
+# Temp
+.tmp.driveupload/
