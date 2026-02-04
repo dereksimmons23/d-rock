@@ -2,6 +2,56 @@
 
 ---
 
+## Session: February 4, 2026
+
+**Branch:** `main`
+**Status:** Vision evolution — D-Rock becomes "living liner notes"
+
+### Completed Today
+
+**Conceptual breakthrough — linguistic synthesizer / typography playground:**
+- ✅ Explored multiple directions: lyrics on vinyl, inner monologue, anti-karaoke, generative poetry
+- ✅ Landed on **"podcast with a soundtrack"** — D-Rock narrates, music plays underneath, words float on screen
+- ✅ Reframed identity: not an AI DJ, but a **narrator of the album sleeve**
+- ✅ "Liner notes" as the core concept — the lost art of reading the album while it plays
+- ✅ Visual sketch: floating lowercase words, variable opacity, slow drift, vinyl as center anchor
+
+### No Files Modified
+
+Vision/concept session only. No code changes.
+
+### Key Insight
+
+> D-Rock is an AI narrator that tells the stories behind the songs. He speaks in a weathered voice while music plays underneath and kinetic typography floats on screen — like living liner notes.
+
+Streaming killed liner notes. D-Rock brings them back — alive.
+
+### Next Session — Build the Typography Layer
+
+**Design decisions to make:**
+- [ ] Typography engine: CSS animations vs Canvas vs WebGL?
+- [ ] Font choice: monospace? variable font that morphs?
+- [ ] Word timing: synced to speech, or independent drift?
+- [ ] Interaction: passive viewing or user can influence?
+
+**Architecture shifts:**
+- [ ] Genius API becomes more central (stories behind songs)
+- [ ] Voice + typography layer (not voice-only anymore)
+- [ ] Consider how words are extracted/generated from D-Rock's speech
+
+**Voice check:**
+- [ ] Listen to ElevenLabs clone — confirm "weathered" vs "redneck poet" vibe
+
+**Still blocking (from previous sessions):**
+- [ ] Spotify Developer app + Client ID
+- [ ] Fix deviceId handling
+- [ ] PWA icons
+- [ ] Custom domain: d-rock.claudewill.io
+
+*"Like staring at an album cover at 2am."*
+
+---
+
 ## Session: February 3, 2026
 
 **Branch:** `main`
