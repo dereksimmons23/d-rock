@@ -59,6 +59,13 @@
 - [ ] Consider ambient hue integration for mood-neutral words
 - [ ] Ghost mood may be too invisible — test on real screen
 
+**Business model — needs real discussion:**
+- [ ] D-Rock has significant IP: the visual poetry engine, the AI-as-typographer concept, the liner notes revival
+- [ ] This can't stay free. Figure out what pays.
+- [ ] Options to explore: premium/subscription, licensing the engine, white-label for artists/labels, API access
+- [ ] Derek's voice clone, curated playlists, original songs — all monetizable IP
+- [ ] Next session: dedicate time to this before more feature work
+
 **Still blocking (from previous sessions):**
 - [ ] Spotify Developer app + Client ID
 - [ ] Fix deviceId handling
