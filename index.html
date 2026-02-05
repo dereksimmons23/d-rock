@@ -55,6 +55,7 @@
         linear-gradient(145deg, #2a2a2e 0%, #1e1e21 40%, #28282c 70%, #1c1c1f 100%);
       /* Brushed metal texture */
       background-size: 100% 100%;
+      transition: opacity 0.4s ease;
     }
 
     .turntable::before {
@@ -463,6 +464,106 @@
       height: env(safe-area-inset-bottom, 0);
       background: var(--surface);
     }
+
+    /* ===========================
+       LINER NOTES — visual poetry
+       =========================== */
+    .liner-notes {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 50;
+      overflow: hidden;
+      transition: opacity 0.6s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .liner-notes.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .liner-notes.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Word elements */
+    .poetry-word {
+      position: absolute;
+      font-family: var(--mono);
+      text-transform: lowercase;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      will-change: transform, opacity;
+    }
+
+    /* Size scale */
+    .poetry-size-1 { font-size: clamp(0.55rem, 1.5vw, 0.85rem); }
+    .poetry-size-2 { font-size: clamp(0.75rem, 2.5vw, 1.1rem); }
+    .poetry-size-3 { font-size: clamp(1rem, 3.5vw, 1.6rem); }
+    .poetry-size-4 { font-size: clamp(1.6rem, 6vw, 2.8rem); font-weight: 700; }
+    .poetry-size-5 { font-size: clamp(2.2rem, 10vw, 4.5rem); font-weight: 700; }
+
+    /* Mood colors */
+    .poetry-mood-dim   { color: hsla(0, 0%, 60%, 0.4); }
+    .poetry-mood-punch { color: var(--accent); }
+    .poetry-mood-warm  { color: hsl(38, 90%, 58%); }
+    .poetry-mood-cold  { color: hsla(195, 100%, 50%, 0.7); }
+    .poetry-mood-ghost { color: hsla(0, 0%, 100%, 0.1); }
+    .poetry-mood-burn  { color: var(--pink); }
+
+    /* Entry animation */
+    @keyframes poetryFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes poetryFadeOut {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
+
+    .poetry-word.entering {
+      animation: poetryFadeIn 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    }
+
+    .poetry-word.exiting {
+      animation: poetryFadeOut 1s ease forwards;
+    }
+
+    /* Audio-reactive pulse */
+    .poetry-word.pulse {
+      transition: transform 0.1s ease;
+    }
+
+    /* Mode toggle button */
+    .mode-toggle {
+      position: fixed;
+      top: env(safe-area-inset-top, 12px);
+      right: 12px;
+      z-index: 100;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid #333;
+      background: rgba(10, 10, 10, 0.8);
+      color: var(--dim);
+      font-size: 1rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      -webkit-tap-highlight-color: transparent;
+      backdrop-filter: blur(8px);
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .mode-toggle:hover { color: var(--text); border-color: #555; }
+    .mode-toggle.active { display: flex; }
   </style>
 </head>
 <body>
@@ -493,6 +594,12 @@
     <p id="state-label"></p>
     <button id="spotify-connect">Connect Spotify</button>
   </div>
+
+  <!-- === LINER NOTES === -->
+  <div id="liner-notes" class="liner-notes hidden"></div>
+
+  <!-- === MODE TOGGLE === -->
+  <button id="mode-toggle" class="mode-toggle" aria-label="Toggle view">◉</button>
 
   <!-- === BOTTOM PANEL === -->
   <div class="bottom-panel">
@@ -530,6 +637,11 @@
     let spotifyDeviceId = null;
     let appState = 'idle';
 
+    // --- View mode state ---
+    let currentView = 'turntable'; // 'turntable' | 'liner-notes'
+    let viewLocked = false;
+    let activeTypography = null;
+
     // --- Elements ---
     const record = document.getElementById('record');
     const tonearm = document.getElementById('tonearm');
@@ -543,6 +655,8 @@
     const npArt = document.getElementById('np-art');
     const connectBtn = document.getElementById('spotify-connect');
     const eqWrap = document.getElementById('eq');
+    const linerNotes = document.getElementById('liner-notes');
+    const modeToggle = document.getElementById('mode-toggle');
 
     // --- Build EQ bars ---
     const NUM_BARS = 32;
@@ -621,6 +735,206 @@
 
     startEqIdle();
 
+    // --- Typography Engine ---
+    class TypographyEngine {
+      constructor({ poetry, container, audioElement }) {
+        this.poetry = poetry.filter(p => p.visible !== false);
+        this.container = container;
+        this.audio = audioElement;
+        this.words = [];
+        this.timeouts = [];
+        this.pulseRaf = null;
+        this.placed = [];
+      }
+
+      start() {
+        this.container.innerHTML = '';
+        this.words = [];
+        this.placed = [];
+
+        // Create DOM elements for each visible phrase
+        this.poetry.forEach((phrase, i) => {
+          const el = document.createElement('span');
+          el.className = `poetry-word poetry-size-${phrase.size || 3} poetry-mood-${phrase.mood || 'dim'}`;
+          el.textContent = phrase.words.toLowerCase();
+          this.container.appendChild(el);
+          this.words.push({ el, phrase, index: i });
+        });
+
+        // Position words after they're in DOM so we can measure
+        requestAnimationFrame(() => {
+          this.positionWords();
+          this.scheduleWords();
+          this.startPulse();
+        });
+      }
+
+      positionWords() {
+        const cw = this.container.clientWidth;
+        const ch = this.container.clientHeight;
+        const pad = 20;
+        const usableW = cw - pad * 2;
+        const usableH = ch - pad * 2;
+
+        // Divide into zones — larger words center, smaller words scatter
+        this.words.forEach(({ el, phrase }) => {
+          const size = phrase.size || 3;
+          let x, y;
+
+          if (size >= 4) {
+            // Big words: center area (20-80% of viewport)
+            x = pad + usableW * (0.2 + Math.random() * 0.6);
+            y = pad + usableH * (0.25 + Math.random() * 0.5);
+          } else if (size >= 2) {
+            // Medium words: wider spread (10-90%)
+            x = pad + usableW * (0.1 + Math.random() * 0.8);
+            y = pad + usableH * (0.1 + Math.random() * 0.8);
+          } else {
+            // Tiny words: edges
+            x = pad + usableW * Math.random();
+            y = pad + usableH * (Math.random() < 0.5 ? Math.random() * 0.2 : 0.8 + Math.random() * 0.2);
+          }
+
+          // Nudge to avoid overlap with placed words
+          const rect = el.getBoundingClientRect();
+          const elW = rect.width || 100;
+          x = Math.min(x, cw - elW - pad);
+          x = Math.max(pad, x);
+
+          el.style.left = x + 'px';
+          el.style.top = y + 'px';
+          this.placed.push({ x, y, w: elW, h: rect.height || 30 });
+        });
+      }
+
+      scheduleWords() {
+        const total = this.words.length;
+        if (!total) return;
+
+        // Try to get audio duration, fall back to estimated 200ms per word
+        const getDuration = () => {
+          if (this.audio && this.audio.duration && isFinite(this.audio.duration)) {
+            return this.audio.duration * 1000;
+          }
+          // Estimate: average spoken phrase ~600ms
+          return total * 600;
+        };
+
+        const schedule = () => {
+          const duration = getDuration();
+          // Reserve 15% at the end for words to linger before fade
+          const activeWindow = duration * 0.85;
+          const interval = activeWindow / total;
+
+          this.words.forEach(({ el }, i) => {
+            const delay = i * interval;
+            const tid = setTimeout(() => {
+              el.classList.add('entering');
+            }, delay);
+            this.timeouts.push(tid);
+          });
+        };
+
+        // If audio has metadata, use real duration. Otherwise estimate.
+        if (this.audio && this.audio.readyState >= 1) {
+          schedule();
+        } else if (this.audio) {
+          this.audio.addEventListener('loadedmetadata', schedule, { once: true });
+          // Fallback if metadata never fires
+          const fallback = setTimeout(schedule, 300);
+          this.timeouts.push(fallback);
+          this.audio.addEventListener('loadedmetadata', () => clearTimeout(fallback), { once: true });
+        } else {
+          schedule();
+        }
+      }
+
+      startPulse() {
+        if (!analyser || !dataArray) return;
+
+        const pulse = () => {
+          if (!this.words.length) return;
+          analyser.getByteFrequencyData(dataArray);
+
+          // Average energy across frequency bins
+          let sum = 0;
+          for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+          const avg = sum / dataArray.length / 255; // 0-1
+
+          this.words.forEach(({ el, phrase }) => {
+            const size = phrase.size || 3;
+            // Bigger words pulse more noticeably
+            const intensity = 1 + avg * (size >= 4 ? 0.06 : 0.02);
+            el.style.transform = `scale(${intensity})`;
+          });
+
+          this.pulseRaf = requestAnimationFrame(pulse);
+        };
+
+        this.pulseRaf = requestAnimationFrame(pulse);
+      }
+
+      stop() {
+        // Clear scheduled appearances
+        this.timeouts.forEach(t => clearTimeout(t));
+        this.timeouts = [];
+
+        // Cancel pulse loop
+        if (this.pulseRaf) cancelAnimationFrame(this.pulseRaf);
+        this.pulseRaf = null;
+
+        // Fade out all words
+        this.words.forEach(({ el }) => {
+          el.classList.remove('entering');
+          el.classList.add('exiting');
+        });
+
+        // Clear after fade
+        setTimeout(() => {
+          this.container.innerHTML = '';
+          this.words = [];
+        }, 1100);
+      }
+
+      // Generate fallback poetry from plain text
+      static fromText(text) {
+        const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
+        return sentences.map((s, i) => {
+          const trimmed = s.trim();
+          if (!trimmed) return null;
+          const isLast = i === sentences.length - 1;
+          const isFirst = i === 0;
+          return {
+            words: trimmed,
+            size: isLast ? 4 : isFirst ? 2 : 3,
+            mood: isLast ? 'punch' : 'dim',
+            visible: true,
+          };
+        }).filter(Boolean);
+      }
+    }
+
+    // --- View mode management ---
+    function showView(view) {
+      currentView = view;
+      if (view === 'liner-notes') {
+        linerNotes.classList.remove('hidden');
+        linerNotes.classList.add('visible');
+        document.querySelector('.turntable').style.opacity = '0';
+        document.querySelector('.turntable').style.pointerEvents = 'none';
+      } else {
+        linerNotes.classList.remove('visible');
+        linerNotes.classList.add('hidden');
+        document.querySelector('.turntable').style.opacity = '1';
+        document.querySelector('.turntable').style.pointerEvents = 'auto';
+      }
+    }
+
+    modeToggle.addEventListener('click', () => {
+      viewLocked = true;
+      showView(currentView === 'turntable' ? 'liner-notes' : 'turntable');
+    });
+
     // --- Tonearm animation ---
     function dropNeedle() {
       tonearm.classList.remove('playing', 'lifting');
@@ -678,6 +992,22 @@
       if (s === 'listening') micBtn.classList.add('listening');
       if (s === 'thinking') micBtn.classList.add('thinking');
       if (s === 'speaking') micBtn.classList.add('speaking');
+
+      // View mode auto-switching
+      if (!viewLocked) {
+        if (s === 'speaking') {
+          showView('liner-notes');
+        } else if (s === 'playing' || s === 'idle') {
+          showView('turntable');
+        }
+      }
+
+      // Show toggle when there's something to toggle between
+      if (s === 'speaking' || s === 'playing') {
+        modeToggle.classList.add('active');
+      } else if (s === 'idle') {
+        modeToggle.classList.remove('active');
+      }
 
       // Record
       record.classList.remove('spinning', 'spinning-slow');
@@ -755,6 +1085,14 @@
       }
 
       if (djResponse.text) {
+        // Reset view lock for fresh cycle
+        viewLocked = false;
+
+        // Prepare poetry data (Haiku annotations or fallback)
+        const poetry = Array.isArray(djResponse.poetry) && djResponse.poetry.length
+          ? djResponse.poetry
+          : TypographyEngine.fromText(djResponse.text);
+
         setState('speaking', 'd-rock is talking...');
         try {
           const speakRes = await fetch('/.netlify/functions/speak', {
@@ -767,6 +1105,16 @@
             const url = URL.createObjectURL(blob);
             const audio = new Audio(url);
             try { connectAudioToEq(audio); } catch {}
+
+            // Start typography engine
+            if (activeTypography) activeTypography.stop();
+            activeTypography = new TypographyEngine({
+              poetry,
+              container: linerNotes,
+              audioElement: audio,
+            });
+            activeTypography.start();
+
             await new Promise((resolve) => {
               audio.onended = resolve;
               audio.onerror = resolve;
@@ -774,6 +1122,12 @@
             });
             URL.revokeObjectURL(url);
             stopEqAudio();
+
+            // Stop typography engine
+            if (activeTypography) {
+              activeTypography.stop();
+              activeTypography = null;
+            }
           }
         } catch {}
       }

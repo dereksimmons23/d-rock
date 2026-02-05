@@ -2,6 +2,73 @@
 
 ---
 
+## Session: February 5, 2026
+
+**Branch:** `main`
+**Status:** Typography engine built — visual poetry is real
+
+### Completed Today
+
+**Typography engine — living liner notes:**
+- ✅ Updated `dj.js` — Haiku now returns a `poetry` array alongside plain `text`
+- ✅ Each phrase annotated: `words`, `size` (1-5), `mood` (dim/punch/warm/cold/ghost/burn), `visible` (true/false)
+- ✅ Haiku decides what hits hard, what whispers, what disappears entirely
+- ✅ Built `TypographyEngine` class in `index.html` — CSS DOM-based rendering
+- ✅ Word positioning: big words center, medium words spread, tiny words scatter to edges
+- ✅ Estimated sync timing: words stagger in roughly timed to audio duration
+- ✅ Audio-reactive pulse: frequency data from Web Audio AnalyserNode subtly scales words
+- ✅ Graceful fallback: if Haiku doesn't return `poetry`, auto-generates from plain text
+
+**Two-mode UI:**
+- ✅ Liner notes mode — full-screen dark canvas for floating words
+- ✅ Auto-switches: speaking → liner notes, playing/idle → turntable
+- ✅ Manual override: toggle button (◉) lets user lock to either view
+- ✅ View lock resets on each new prompt cycle
+- ✅ Smooth crossfade transitions (turntable 0.4s out, liner notes 0.6s in)
+
+**Design decisions locked:**
+- ✅ Visual poetry, not subtitles — Haiku is the typographer
+- ✅ Monospace, lowercase, variable opacity — 2am album sleeve aesthetic
+- ✅ CSS-only rendering (matches existing codebase pattern, no Canvas/WebGL)
+- ✅ 6 moods: dim, punch, warm, cold, ghost, burn
+- ✅ 5 size tiers: whisper → quiet → normal → loud → massive
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `netlify/functions/dj.js` | Visual poetry instructions in Haiku prompt, `poetry` array in response schema, max_tokens 300→500 |
+| `index.html` | Liner notes container, mode toggle button, visual poetry CSS (sizes, moods, animations), TypographyEngine class, view mode management, handlePrompt integration |
+
+### Key Insight
+
+> The AI is the typographer. Haiku doesn't just speak — it decides which words deserve the screen, how big they are, what color they burn. Some words disappear entirely. The client just renders what the poet chose, then makes it breathe with audio energy.
+
+### Next Session
+
+**Test the full flow:**
+- [ ] Run `netlify dev` and send a prompt
+- [ ] Verify Haiku returns valid `poetry` array
+- [ ] Confirm liner notes screen appears during speaking
+- [ ] Tune word positioning (may need overlap avoidance refinement)
+- [ ] Tune timing feel (estimated sync vs actual speech rhythm)
+
+**Polish the poetry:**
+- [ ] Experiment with Haiku's annotation quality — may need prompt tuning
+- [ ] Consider adding word drift (slow translateX/Y over time)
+- [ ] Consider ambient hue integration for mood-neutral words
+- [ ] Ghost mood may be too invisible — test on real screen
+
+**Still blocking (from previous sessions):**
+- [ ] Spotify Developer app + Client ID
+- [ ] Fix deviceId handling
+- [ ] PWA icons
+- [ ] Custom domain: d-rock.claudewill.io
+
+*"Some words are bigger because they matter more. Some don't appear because you already know."*
+
+---
+
 ## Session: February 4, 2026
 
 **Branch:** `main`

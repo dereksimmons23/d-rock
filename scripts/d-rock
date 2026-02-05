@@ -3,7 +3,7 @@
 # d-rock - D-Rock project system
 # Usage: d-rock [work|lyrics|spotify|help]
 
-DROCK_DIR="/Users/dereksimmons/Desktop/d-rock"
+DROCK_DIR="/Users/dereksimmons/Desktop/apps/d-rock"
 CLAUDE_MD="$DROCK_DIR/CLAUDE.md"
 SESSION_CLOSEOUT="$DROCK_DIR/SESSION_CLOSEOUT.md"
 
