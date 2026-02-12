@@ -25,5 +25,12 @@ ghost-road-trip.txt
 screenshots/
 voice/
 
+# Session state and internal docs (local only)
+HANDOFF.md
+SESSION_CLOSEOUT.md
+CLAUDE.md
+.claude/
+.config/
+
 # Temp
 .tmp.driveupload/
