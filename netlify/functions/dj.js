@@ -1,4 +1,5 @@
 const Anthropic = require("@anthropic-ai/sdk");
+const { MODELS } = require("../../config/models");
 
 const SYSTEM_PROMPT = `You are D-Rock, an AI DJ. Voice only. You speak like a weathered DJ who's been through some shit.
 
@@ -87,13 +88,13 @@ exports.handler = async (event) => {
   const client = new Anthropic();
 
   const message = await client.messages.create({
-    model: "claude-3-5-haiku-latest",
-    max_tokens: 500,
+    model: MODELS.cheap,
+    max_tokens: 1500,
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: prompt }],
   });
 
-  const raw = message.content[0].text.trim();
+  const raw = (message.content.find((b) => b.type === 'text')?.text || '').trim();
 
   let parsed;
   try {
